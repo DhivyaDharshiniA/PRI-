@@ -1,0 +1,654 @@
+/* Coding assessment module. Reuses the --apt-* tokens and apt-btn/apt-card
+   classes from aptitude.css for shared chrome; everything below is specific
+   to the code-editor / IDE experience. */
+
+.cd-exam-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  color: #e2e8f0;
+}
+
+.cd-exam-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: #111827;
+  border-bottom: 1px solid #1f2937;
+}
+
+.cd-exam-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #f8fafc;
+}
+
+.cd-exam-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.cd-timer {
+  font-weight: 700;
+  font-size: 18px;
+  color: #86efac;
+  background: rgba(22, 163, 74, 0.12);
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+
+.cd-timer.low {
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.15);
+  animation: cd-pulse 1s infinite;
+}
+
+@keyframes cd-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.cd-exam-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr 1fr;
+  min-height: 0;
+}
+
+@media (max-width: 1100px) {
+  .cd-exam-body { grid-template-columns: 1fr; }
+}
+
+/* ---------- question list sidebar ---------- */
+
+.cd-question-list {
+  background: #111827;
+  border-right: 1px solid #1f2937;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+.cd-question-item {
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  font-size: 13px;
+}
+
+.cd-question-item:hover {
+  background: #1e293b;
+}
+
+.cd-question-item.current {
+  background: rgba(37, 99, 235, 0.18);
+  border-color: var(--apt-blue-500, #2563eb);
+}
+
+.cd-question-item .cd-q-title {
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.cd-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  margin-top: 6px;
+  letter-spacing: 0.03em;
+}
+
+.cd-badge.solved { background: #14532d; color: #86efac; }
+.cd-badge.attempted { background: #78350f; color: #fcd34d; }
+.cd-badge.untouched { background: #1f2937; color: #94a3b8; }
+
+/* ---------- problem panel ---------- */
+
+.cd-problem-panel {
+  overflow-y: auto;
+  padding: 22px 26px;
+  border-right: 1px solid #1f2937;
+  background: #0b1220;
+}
+
+.cd-problem-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #f8fafc;
+  margin: 0 0 8px;
+}
+
+.cd-difficulty {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.cd-difficulty.easy { background: #14532d; color: #86efac; }
+.cd-difficulty.medium { background: #78350f; color: #fcd34d; }
+.cd-difficulty.hard { background: #7f1d1d; color: #fca5a5; }
+
+.cd-problem-desc {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.cd-constraints {
+  margin-top: 18px;
+  padding: 12px 14px;
+  background: #1e293b;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: pre-wrap;
+}
+
+.cd-sample-case {
+  margin-top: 16px;
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.cd-sample-case h5 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+.cd-sample-case pre {
+  margin: 0 0 8px;
+  font-family: "Fira Code", monospace;
+  font-size: 13px;
+  color: #e2e8f0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- editor panel ---------- */
+
+.cd-editor-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #0f172a;
+}
+
+.cd-editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #1f2937;
+}
+
+.cd-lang-select {
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+.cd-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cd-btn {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s;
+}
+
+.cd-btn:hover { filter: brightness(1.1); }
+.cd-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cd-btn-run { background: #334155; color: #e2e8f0; }
+.cd-btn-submit { background: #16a34a; color: #fff; }
+.cd-btn-finish { background: #2563eb; color: #fff; }
+
+.cd-editor-wrap {
+  flex: 1;
+  min-height: 260px;
+}
+
+.cd-results-panel {
+  border-top: 1px solid #1f2937;
+  max-height: 38%;
+  overflow-y: auto;
+  padding: 12px 16px;
+  background: #0b1220;
+}
+
+.cd-results-summary {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.cd-results-summary.pass { color: #86efac; }
+.cd-results-summary.fail { color: #fca5a5; }
+
+.cd-case-row {
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.cd-case-row.pass { border-color: #14532d; background: rgba(22,163,74,0.08); }
+.cd-case-row.fail { border-color: #7f1d1d; background: rgba(220,38,38,0.08); }
+
+.cd-case-head {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cd-case-detail {
+  font-family: "Fira Code", monospace;
+  color: #94a3b8;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 2px 0;
+}
+
+/* ---------- lock / intro screen ---------- */
+
+.cd-lock-screen {
+  max-width: 640px;
+  margin: 60px auto;
+  background: #fff;
+}
+
+/* ---------- shared back-navigation header (student list/result pages) ---------- */
+
+.cd-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.cd-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1.5px solid var(--apt-blue-100, #e6efff);
+  color: var(--apt-blue-700, #14428f);
+  font-weight: 600;
+  font-size: 13.5px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.12s;
+}
+
+.cd-back-btn:hover {
+  background: var(--apt-blue-50, #f4f8ff);
+  border-color: var(--apt-blue-500, #2563eb);
+  transform: translateX(-1px);
+}
+
+.cd-back-btn svg { flex-shrink: 0; }
+
+.cd-topbar-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--apt-gray-500, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ---------- exam-shell back-out (intro/error screens only, never mid-test) ---------- */
+
+.cd-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  color: var(--apt-gray-500, #64748b);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+  margin-bottom: 6px;
+}
+
+.cd-exit-btn:hover { color: var(--apt-blue-700, #14428f); }
+
+/* status-message color variants for coding-test-specific states
+   (pending PC review, approved resume) that the aptitude flow doesn't have */
+.status-message.warning h4 { color: #d97706; }
+.status-message.info h4 { color: #2563eb; }
+
+/* ---------- placement cell: hero header ---------- */
+
+.cd-hero {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 45%, #db2777 100%);
+  border-radius: 22px;
+  padding: 36px 34px;
+  color: #fff;
+  margin-bottom: 26px;
+  box-shadow: 0 20px 45px rgba(79, 70, 229, 0.32);
+}
+
+.cd-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 88% 15%, rgba(255,255,255,0.22), transparent 55%),
+              radial-gradient(circle at 5% 95%, rgba(255,255,255,0.12), transparent 45%);
+  pointer-events: none;
+}
+
+.cd-hero-back {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 20px;
+  backdrop-filter: blur(6px);
+  transition: background 0.15s, transform 0.12s;
+}
+.cd-hero-back:hover { background: rgba(255,255,255,0.26); transform: translateX(-2px); }
+
+.cd-hero-eyebrow {
+  position: relative;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+.cd-hero h1 {
+  position: relative;
+  font-size: 30px;
+  margin: 6px 0 10px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.cd-hero p {
+  position: relative;
+  margin: 0;
+  opacity: 0.92;
+  max-width: 680px;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+/* ---------- placement cell: tabs ---------- */
+
+.cd-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+}
+
+.cd-tab-btn {
+  border: none;
+  padding: 11px 22px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  background: #eef2ff;
+  color: #4338ca;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.cd-tab-btn:hover { transform: translateY(-1px); }
+
+.cd-tab-btn.active {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(79, 70, 229, 0.38);
+}
+
+.cd-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.35);
+  font-size: 11px;
+}
+.cd-tab-btn:not(.active) .cd-tab-badge { background: #dc2626; color: #fff; }
+
+/* ---------- placement cell: filter bar ---------- */
+
+.cd-filter-bar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cd-filter-bar input,
+.cd-filter-bar select {
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e6efff;
+  font-size: 13px;
+  font-family: inherit;
+  background: #fff;
+}
+
+.cd-filter-bar input { flex: 1; min-width: 220px; }
+
+/* ---------- placement cell: test cards ---------- */
+
+.cd-test-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 24px;
+  margin-bottom: 18px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+  border: 1px solid #eef2ff;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.cd-test-card:hover { box-shadow: 0 16px 34px rgba(15, 23, 42, 0.1); }
+
+.cd-test-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.cd-test-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 4px;
+}
+
+.cd-test-meta {
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.cd-stat-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.cd-stat-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 78px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #eef2ff;
+}
+.cd-stat-chip b { font-size: 18px; margin-bottom: 1px; }
+.cd-stat-chip.indigo { background: #eef2ff; } .cd-stat-chip.indigo b { color: #4338ca; }
+.cd-stat-chip.green { background: #dcfce7; } .cd-stat-chip.green b { color: #15803d; }
+.cd-stat-chip.amber { background: #fef3c7; } .cd-stat-chip.amber b { color: #b45309; }
+.cd-stat-chip.red { background: #fee2e2; } .cd-stat-chip.red b { color: #b91c1c; }
+
+.cd-test-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.cd-details-panel {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px dashed #e2e8f0;
+}
+
+.cd-details-section-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #4338ca;
+  margin: 0 0 12px;
+}
+
+.cd-question-review {
+  border: 1px solid #eef2ff;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: #fafbff;
+}
+.cd-question-review h5 { margin: 0 0 4px; font-size: 14.5px; color: #0f172a; }
+.cd-question-review-meta { font-size: 11.5px; color: #64748b; margin-bottom: 8px; }
+.cd-question-review-desc { font-size: 13px; color: #334155; white-space: pre-wrap; margin: 6px 0; }
+
+/* ---------- placement cell: violation review ---------- */
+
+.cd-violation-card {
+  border: 1px solid var(--apt-blue-100, #e6efff);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background: #fff;
+}
+
+.cd-violation-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cd-violation-tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--apt-red-100, #fee2e2);
+  color: var(--apt-red-500, #dc2626);
+}
+
+.cd-screenshot {
+  max-width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  margin: 10px 0;
+  cursor: zoom-in;
+}
+
+.cd-decision-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.cd-decision-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+}
+
+.cd-decision-badge.approved { background: #dcfce7; color: #16a34a; }
+.cd-decision-badge.rejected { background: #fee2e2; color: #dc2626; }
+
+/* ---------- results table ---------- */
+
+.cd-results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cd-results-table th, .cd-results-table td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.cd-results-table th {
+  color: var(--apt-gray-500, #64748b);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.cd-status-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.cd-status-pill.SUBMITTED { background: #dcfce7; color: #16a34a; }
+.cd-status-pill.AUTO_SUBMITTED { background: #fee2e2; color: #dc2626; }
+.cd-status-pill.IN_PROGRESS { background: #fef3c7; color: #d97706; }
+.cd-status-pill.ASSIGNED { background: #e6efff; color: #1a56b0; }
