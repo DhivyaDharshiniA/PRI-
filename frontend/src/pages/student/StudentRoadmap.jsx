@@ -1,17 +1,18 @@
-import React, { useEffect, useMemo, useState } from "react";
+ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowLeft,
   Map,
   CheckCircle2,
-  Clock3,
   Trophy,
   Code2,
   ClipboardList,
   RefreshCw,
   AlertCircle,
+  Menu,
 } from "lucide-react";
+import { IoChevronBack } from "react-icons/io5";
 import axios from "axios";
+import StudentSidebar from "../student/StudentSidebar"; // adjust path if your sidebar lives elsewhere
 
 const API_BASE_URL = "http://localhost:8080";
 
@@ -26,6 +27,8 @@ const StudentRoadmap = () => {
 
   const [aptitudeError, setAptitudeError] = useState("");
   const [codingError, setCodingError] = useState("");
+
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const token = localStorage.getItem("token");
 
@@ -606,47 +609,104 @@ const StudentRoadmap = () => {
    */
 
   return (
-    <div className="roadmap-page">
+    <div className="roadmap-shell">
 
       <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
 
-        .roadmap-page {
+        * { box-sizing: border-box; }
+
+        .roadmap-shell {
+          --navy: #0e1a2b;
+          --navy-raised: #16273d;
+          --blue: #1d4ed8;
+          --blue-soft: rgba(29, 78, 216, 0.07);
+          --ink: #101828;
+          --muted: #667085;
+          --border: #e4e7ec;
+          --bg: #f7f8fa;
+
+          display: flex;
           min-height: 100vh;
-          background: #f8fafc;
-          color: #101828;
-          font-family: Inter, Arial, sans-serif;
-          padding: 30px 40px 50px;
+          width: 100%;
+          font-family: 'Inter', sans-serif;
+          color: var(--ink);
+          background: var(--bg);
         }
 
-        .roadmap-container-main {
-          max-width: 1250px;
-          margin: 0 auto;
+        .roadmap-main {
+          flex: 1;
+          min-width: 0;
+          padding: 32px 40px 60px;
         }
 
-        .roadmap-top {
+        @media (min-width: 1024px) {
+          .roadmap-main {
+            margin-left: 270px;
+          }
+        }
+
+        /* ============ Topbar ============ */
+
+        .roadmap-topbar {
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 20px;
-          margin-bottom: 25px;
+          margin-bottom: 26px;
+        }
+
+        .roadmap-topbar-left {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+        }
+
+        .roadmap-menu-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 38px;
+          height: 38px;
+          border-radius: 8px;
+          border: 1px solid var(--border);
+          background: #fff;
+          color: var(--ink);
+          cursor: pointer;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+
+        @media (min-width: 1024px) {
+          .roadmap-menu-btn {
+            display: none;
+          }
+        }
+
+        .roadmap-heading-col {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
         }
 
         .back-button {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          padding: 9px 14px;
-          border: 1px solid #e4e7ec;
-          border-radius: 8px;
-          background: white;
-          color: #344054;
-          font-size: 13px;
+          gap: 6px;
+          width: fit-content;
+          padding: 8px 13px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+          background: #fff;
+          color: var(--muted);
+          font-size: 12.5px;
           font-weight: 600;
           cursor: pointer;
+          transition: color 0.15s ease, border-color 0.15s ease;
         }
 
         .back-button:hover {
-          background: #f8fafc;
+          color: var(--ink);
           border-color: #c7d7fe;
         }
 
@@ -657,96 +717,117 @@ const StudentRoadmap = () => {
         }
 
         .roadmap-heading-icon {
-          width: 45px;
-          height: 45px;
+          width: 44px;
+          height: 44px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 11px;
-          background: #eef4ff;
-          color: #1d4ed8;
+          border-radius: 10px;
+          background: rgba(29,78,216,0.1);
+          color: var(--blue);
+          flex-shrink: 0;
+        }
+
+        .roadmap-eyebrow {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 10.5px;
+          letter-spacing: 1.8px;
+          text-transform: uppercase;
+          color: var(--muted);
+          margin: 0 0 4px;
         }
 
         .roadmap-title-main {
           margin: 0;
-          color: #0e1a2b;
-          font-family: Georgia, serif;
-          font-size: 28px;
+          font-family: 'Source Serif 4', serif;
+          font-size: 25px;
           font-weight: 600;
-        }
-
-        .roadmap-subtitle-main {
-          margin: 5px 0 0;
-          color: #667085;
-          font-size: 13px;
+          letter-spacing: -0.2px;
+          color: var(--ink);
         }
 
         .refresh-button {
           display: inline-flex;
           align-items: center;
           gap: 7px;
-          padding: 9px 13px;
-          border: 1px solid #e4e7ec;
-          border-radius: 8px;
-          background: white;
-          color: #344054;
+          padding: 9px 15px;
+          border: 1px solid var(--border);
+          border-radius: 7px;
+          background: #fff;
+          color: var(--ink);
           cursor: pointer;
-          font-size: 12px;
+          font-size: 12.5px;
           font-weight: 600;
+          flex-shrink: 0;
+          transition: background 0.15s ease, border-color 0.15s ease;
         }
+
+        .refresh-button:hover {
+          background: #f8fafc;
+          border-color: #c7d7fe;
+        }
+
+        /* ============ Summary ============ */
 
         .summary-grid {
           display: grid;
           grid-template-columns: repeat(4, minmax(0, 1fr));
-          gap: 14px;
+          gap: 16px;
           margin-bottom: 20px;
         }
 
         .summary-card {
-          background: white;
-          border: 1px solid #e4e7ec;
-          border-radius: 13px;
+          background: #fff;
+          border: 1px solid var(--border);
+          border-radius: 10px;
           padding: 18px;
         }
 
         .summary-label {
-          color: #667085;
-          font-size: 11px;
+          color: var(--muted);
+          font-size: 11.5px;
           margin-bottom: 8px;
         }
 
         .summary-value {
-          color: #0e1a2b;
-          font-size: 26px;
-          font-weight: 700;
+          font-family: 'Source Serif 4', serif;
+          color: var(--ink);
+          font-size: 24px;
+          font-weight: 600;
         }
 
         .summary-description {
           margin-top: 4px;
           color: #98a2b3;
-          font-size: 10px;
+          font-size: 10.5px;
         }
 
-        .roadmap-card-main {
-          background: white;
-          border: 1px solid #e4e7ec;
-          border-radius: 15px;
-          padding: 23px;
+        /* ============ Cards ============ */
+
+        .roadmap-card-main,
+        .tests-card {
+          background: #fff;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 24px;
           margin-bottom: 20px;
         }
 
         .section-title {
           margin: 0;
-          color: #0e1a2b;
-          font-size: 15px;
-          font-weight: 700;
+          font-family: 'Source Serif 4', serif;
+          color: var(--ink);
+          font-size: 16px;
+          font-weight: 600;
         }
 
         .section-description {
           margin: 5px 0 20px;
-          color: #667085;
-          font-size: 11px;
+          color: var(--muted);
+          font-size: 12px;
         }
+
+        /* ============ Roadmap track ============ */
 
         .roadmap-track {
           display: flex;
@@ -768,19 +849,20 @@ const StudentRoadmap = () => {
           justify-content: center;
           margin: 0 auto 9px;
           border-radius: 50%;
+          font-family: 'IBM Plex Mono', monospace;
           font-size: 11px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .roadmap-step-number.completed {
-          background: #16a34a;
-          color: white;
+          background: #047857;
+          color: #fff;
         }
 
         .roadmap-step-number.current {
-          background: #1d4ed8;
-          color: white;
-          box-shadow: 0 0 0 5px #e8eeff;
+          background: var(--blue);
+          color: #fff;
+          box-shadow: 0 0 0 5px var(--blue-soft);
         }
 
         .roadmap-step-number.upcoming {
@@ -789,15 +871,15 @@ const StudentRoadmap = () => {
         }
 
         .roadmap-step-title {
-          color: #101828;
-          font-size: 11px;
-          font-weight: 700;
+          color: var(--ink);
+          font-size: 12px;
+          font-weight: 600;
         }
 
         .roadmap-step-description {
           margin-top: 4px;
-          color: #667085;
-          font-size: 9px;
+          color: var(--muted);
+          font-size: 10.5px;
           line-height: 1.4;
         }
 
@@ -805,19 +887,14 @@ const StudentRoadmap = () => {
           flex: 1;
           height: 2px;
           margin-top: 17px;
-          background: #e4e7ec;
+          background: var(--border);
         }
 
         .roadmap-connector.completed {
-          background: #16a34a;
+          background: #047857;
         }
 
-        .tests-card {
-          background: white;
-          border: 1px solid #e4e7ec;
-          border-radius: 15px;
-          padding: 23px;
-        }
+        /* ============ Tests table ============ */
 
         .tests-header {
           display: flex;
@@ -827,12 +904,13 @@ const StudentRoadmap = () => {
         }
 
         .tests-count {
-          padding: 5px 9px;
+          padding: 5px 10px;
           border-radius: 999px;
-          background: #eef4ff;
-          color: #1d4ed8;
+          background: rgba(29,78,216,0.1);
+          color: var(--blue);
+          font-family: 'IBM Plex Mono', monospace;
           font-size: 10px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .tests-table-wrapper {
@@ -847,11 +925,11 @@ const StudentRoadmap = () => {
 
         .tests-table th {
           padding: 12px 10px;
-          border-bottom: 1px solid #e4e7ec;
+          border-bottom: 1px solid var(--border);
           text-align: left;
-          color: #667085;
-          font-size: 10px;
-          font-weight: 700;
+          color: var(--muted);
+          font-size: 10.5px;
+          font-weight: 600;
           text-transform: uppercase;
           letter-spacing: .3px;
         }
@@ -859,7 +937,7 @@ const StudentRoadmap = () => {
         .tests-table td {
           padding: 14px 10px;
           border-bottom: 1px solid #f0f2f5;
-          font-size: 12px;
+          font-size: 12.5px;
           color: #475467;
         }
 
@@ -868,56 +946,56 @@ const StudentRoadmap = () => {
         }
 
         .test-name {
-          color: #0e1a2b;
-          font-weight: 700;
+          color: var(--ink);
+          font-weight: 600;
         }
 
         .test-type {
           display: inline-flex;
           align-items: center;
           gap: 5px;
-          padding: 5px 8px;
+          padding: 5px 9px;
           border-radius: 999px;
           font-size: 10px;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .test-type.aptitude {
-          background: #ecfdf3;
+          background: rgba(5,150,105,0.1);
           color: #047857;
         }
 
         .test-type.coding {
-          background: #eef4ff;
-          color: #1d4ed8;
+          background: rgba(29,78,216,0.1);
+          color: var(--blue);
         }
 
         .score-badge {
           display: inline-flex;
-          padding: 5px 9px;
+          padding: 5px 10px;
           border-radius: 7px;
-          font-size: 11px;
-          font-weight: 700;
+          font-size: 11.5px;
+          font-weight: 600;
         }
 
         .score-excellent {
-          background: #ecfdf3;
-          color: #15803d;
+          background: rgba(5,150,105,0.1);
+          color: #047857;
         }
 
         .score-good {
-          background: #eef4ff;
-          color: #1d4ed8;
+          background: rgba(29,78,216,0.1);
+          color: var(--blue);
         }
 
         .score-low {
-          background: #fff1f2;
-          color: #dc2626;
+          background: rgba(220,38,38,0.1);
+          color: #b91c1c;
         }
 
         .score-neutral {
           background: #f2f4f7;
-          color: #667085;
+          color: var(--muted);
         }
 
         .progress-wrapper {
@@ -937,43 +1015,44 @@ const StudentRoadmap = () => {
         .progress-fill {
           height: 100%;
           border-radius: 99px;
-          background: #1d4ed8;
+          background: var(--blue);
         }
 
         .empty-state {
-          padding: 45px 20px;
+          padding: 50px 20px;
           text-align: center;
-          color: #667085;
+          color: var(--muted);
         }
 
         .empty-icon {
-          width: 45px;
-          height: 45px;
+          width: 44px;
+          height: 44px;
           margin: 0 auto 12px;
           display: flex;
           align-items: center;
           justify-content: center;
           border-radius: 50%;
           background: #f2f4f7;
+          color: var(--blue);
         }
 
         .error-box {
           display: flex;
           align-items: center;
           gap: 8px;
-          padding: 11px 13px;
+          padding: 11px 14px;
           margin-bottom: 15px;
           border-radius: 8px;
           background: #fff7ed;
           color: #c2410c;
-          font-size: 11px;
+          font-size: 12px;
+        }
+
+        @keyframes roadmap-spin {
+          to { transform: rotate(360deg); }
         }
 
         @media (max-width: 900px) {
-          .roadmap-page {
-            padding: 22px;
-          }
-
           .summary-grid {
             grid-template-columns: repeat(2, 1fr);
           }
@@ -993,70 +1072,66 @@ const StudentRoadmap = () => {
         }
 
         @media (max-width: 550px) {
-          .roadmap-page {
-            padding: 16px;
+          .roadmap-main {
+            padding: 22px 18px 40px;
           }
 
-          .roadmap-top {
+          .roadmap-topbar {
             align-items: flex-start;
           }
 
           .roadmap-title-main {
-            font-size: 22px;
-          }
-
-          .refresh-button {
-            font-size: 0;
+            font-size: 20px;
           }
 
           .summary-grid {
             grid-template-columns: 1fr;
           }
         }
-
       `}</style>
 
-      <div className="roadmap-container-main">
+      <StudentSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+
+      <main className="roadmap-main">
 
         {/* ================================================================
             HEADER
         ================================================================ */}
 
-        <div className="roadmap-top">
+        <div className="roadmap-topbar">
 
-          <div>
-
-            <button
-              type="button"
-              className="back-button"
-              onClick={() =>
-                navigate("/student-dashboard")
-              }
-            >
-              <ArrowLeft size={15} />
-              Back to Dashboard
+          <div className="roadmap-topbar-left">
+            <button className="roadmap-menu-btn" onClick={() => setMobileOpen(true)}>
+              <Menu size={18} />
             </button>
 
-            <div
-              className="roadmap-heading"
-              style={{ marginTop: 18 }}
-            >
-              <div className="roadmap-heading-icon">
-                <Map size={22} />
+            <div className="roadmap-heading-col">
+
+              <button
+                type="button"
+                className="back-button"
+                onClick={() =>
+                  navigate("/student-dashboard")
+                }
+              >
+                <IoChevronBack size={14} />
+                Back to Dashboard
+              </button>
+
+              <div className="roadmap-heading">
+                <div className="roadmap-heading-icon">
+                  <Map size={20} />
+                </div>
+
+                <div>
+                  <p className="roadmap-eyebrow">Placement Readiness</p>
+                  <h1 className="roadmap-title-main">
+                    Placement Roadmap
+                  </h1>
+                </div>
               </div>
 
-              <div>
-                <h1 className="roadmap-title-main">
-                  Placement Roadmap
-                </h1>
-
-                <p className="roadmap-subtitle-main">
-                  Track your attended assessments and
-                  scores.
-                </p>
-              </div>
             </div>
-
           </div>
 
           <button
@@ -1255,7 +1330,7 @@ const StudentRoadmap = () => {
                 style={{
                   margin: "0 auto 10px",
                   animation:
-                    "spin 1s linear infinite",
+                    "roadmap-spin 1s linear infinite",
                 }}
               />
 
@@ -1276,7 +1351,7 @@ const StudentRoadmap = () => {
               <p
                 style={{
                   marginTop: 6,
-                  fontSize: 11,
+                  fontSize: 11.5,
                 }}
               >
                 Complete an aptitude or coding test
@@ -1341,8 +1416,8 @@ const StudentRoadmap = () => {
                                   background:
                                     test.type ===
                                     "Coding"
-                                      ? "#eef4ff"
-                                      : "#ecfdf3",
+                                      ? "rgba(29,78,216,0.1)"
+                                      : "rgba(5,150,105,0.1)",
                                   color:
                                     test.type ===
                                     "Coding"
@@ -1430,7 +1505,7 @@ const StudentRoadmap = () => {
                                 <span
                                   style={{
                                     fontSize: 10,
-                                    fontWeight: 700,
+                                    fontWeight: 600,
                                   }}
                                 >
                                   {percentage}%
@@ -1457,7 +1532,7 @@ const StudentRoadmap = () => {
 
         </section>
 
-      </div>
+      </main>
 
     </div>
   );
