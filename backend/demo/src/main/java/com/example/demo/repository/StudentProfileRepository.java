@@ -11,4 +11,7 @@ public interface StudentProfileRepository
     Optional<StudentProfile> findByUserId(Long userId);
 
     boolean existsByUserId(Long userId);
+
+
+
 }
