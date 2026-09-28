@@ -754,6 +754,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import AptitudeTestList from "./pages/student/AptitudeTestList";
 import AptitudeTestRunner from "./pages/student/AptitudeTestRunner";
 import AptitudeTestResult from "./pages/student/AptitudeTestResult";
+import CommunicationAssessment from "./pages/student/CommunicationAssessment";
 
 import CodingTestList from "./pages/student/CodingTestList";
 import CodingTestRunner from "./pages/student/CodingTestRunner";
@@ -884,6 +885,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["STUDENT"]}>
               <CodingTestRunner />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/student/communication"
+          element={
+            <ProtectedRoute allowedRoles={["STUDENT"]}>
+              <CommunicationAssessment />
             </ProtectedRoute>
           }
         />
